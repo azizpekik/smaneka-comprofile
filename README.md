@@ -198,3 +198,4 @@ Untuk melengkapi website, perlu ditambahkan:
 ## Credits
 
 Developed for SMAN 1 Kepanjen
+# smaneka-comprofile
