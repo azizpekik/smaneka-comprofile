@@ -79,31 +79,34 @@
     </div><!-- End Features Block -->
 
     <!-- Latest News Block -->
+    @php $latestPost = $latestPosts->first(); @endphp
+    @if($latestPost)
     <div class="event-block" data-aos="fade-up" data-aos-delay="200">
       <div class="row align-items-center gy-4">
         <div class="col-auto">
           <div class="event-cal">
-            <span class="ec-month">{{ $latestPosts->first()->published_at?->format('M') }}</span>
-            <span class="ec-day">{{ $latestPosts->first()->published_at?->format('d') }}</span>
+            <span class="ec-month">{{ $latestPost->published_at?->format('M') ?? $latestPost->created_at->format('M') }}</span>
+            <span class="ec-day">{{ $latestPost->published_at?->format('d') ?? $latestPost->created_at->format('d') }}</span>
           </div>
         </div>
         <div class="col">
           <div class="event-info">
-            @if($latestPosts->first()->category)
-            <span class="event-tag">{{ $latestPosts->first()->category->name }}</span>
+            @if($latestPost->category)
+            <span class="event-tag">{{ $latestPost->category->name }}</span>
             @endif
-            <h3>{{ $latestPosts->first()->title }}</h3>
-            <p>{{ Str::limit(strip_tags($latestPosts->first()->content), 200) }}</p>
+            <h3>{{ $latestPost->title }}</h3>
+            <p>{{ Str::limit(strip_tags($latestPost->content), 200) }}</p>
           </div>
         </div>
         <div class="col-xl-auto col-12">
           <div class="event-actions">
-            <a href="{{ route('posts.show', $latestPosts->first()->slug) }}" class="btn-rsvp">Baca Selengkapnya</a>
-            <span class="event-timer"><i class="bi bi-clock-fill"></i> {{ $latestPosts->first()->published_at?->diffForHumans() }}</span>
+            <a href="{{ route('posts.show', $latestPost->slug) }}" class="btn-rsvp">Baca Selengkapnya</a>
+            <span class="event-timer"><i class="bi bi-clock-fill"></i> {{ $latestPost->published_at?->diffForHumans() ?? $latestPost->created_at->diffForHumans() }}</span>
           </div>
         </div>
       </div>
-    </div><!-- End Latest News Block -->
+    </div>
+    @endif<!-- End Latest News Block -->
 
   </div>
 </section>
