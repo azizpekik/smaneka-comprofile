@@ -1,0 +1,52 @@
+# Laravel & PHP
+/.phpunit.cache
+/vendor
+/storage/*.key
+/storage/pail
+/.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+/auth.json
+
+# Node & Frontend
+/node_modules
+/public/build
+/public/hot
+npm-debug.log
+yarn-error.log
+
+# Environment & Secrets
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# IDE & Editors
+/.fleet
+/.idea
+/.nova
+/.zed
+/.vscode
+
+# Generated files
+/public/storage
+/database/*.sqlite
+/database/*.sqlite.backup*
+/database/mysql_backup*.sql
+
+# Logs
+/storage/logs/*.log
+logs/*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Cache
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
