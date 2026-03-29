@@ -10,7 +10,7 @@ Route::get('/berita', [FrontendController::class, 'posts'])->name('posts');
 Route::get('/berita/kategori/{category:slug}', [FrontendController::class, 'posts'])->name('posts.category');
 Route::get('/berita/{slug}', [FrontendController::class, 'postDetail'])->name('posts.show');
 Route::get('/guru-staff', [FrontendController::class, 'teachers'])->name('teachers');
-Route::get('/guru', [FrontendController::class, 'teachers'])->name('teachers');
+Route::get('/guru', [FrontendController::class, 'teachers'])->name('guru');
 Route::get('/prestasi', [FrontendController::class, 'achievements'])->name('achievements');
 Route::get('/ekstrakurikuler', [FrontendController::class, 'extracurriculars'])->name('extracurriculars');
 Route::get('/galeri', [FrontendController::class, 'gallery'])->name('gallery');
