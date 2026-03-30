@@ -55,9 +55,9 @@
 ### 1. Database Setup (cPanel)
 - [ ] Login ke cPanel
 - [ ] Buka **MySQL Databases**
-- [ ] Buat database baru: `___________`
-- [ ] Buat user database: `___________`
-- [ ] Generate password kuat: `___________`
+- [ ] Buat database baru: `u343856082_smaneka`
+- [ ] Buat user database: `u343856082_smaneka`
+- [ ] Generate password kuat: `PtPw>|7gJl@7`
 - [ ] Assign user ke database dengan **ALL PRIVILEGES**
 - [ ] Catat kredensial database
 

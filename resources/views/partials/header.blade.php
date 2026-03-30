@@ -86,8 +86,6 @@
           <li><a href="#achievements">Achievements</a></li>
           <li><a href="#contact">Contact</a></li>
           @endif
-          
-          <li><a href="{{ route('guestbook') }}" class="btn-cta d-none d-xl-block">Guest Book</a>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
