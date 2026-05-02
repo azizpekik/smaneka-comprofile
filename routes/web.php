@@ -18,6 +18,10 @@ Route::get('/kontak', [FrontendController::class, 'guestbook'])->name('kontak');
 Route::get('/guest-book', [FrontendController::class, 'guestbook'])->name('guestbook');
 Route::post('/guest-book', [FrontendController::class, 'guestbookSubmit'])->name('guestbook.submit');
 
+// Kritik & Saran Routes
+Route::get('/kritik-saran', [FrontendController::class, 'suggestion'])->name('kritik-saran');
+Route::post('/kritik-saran', [FrontendController::class, 'suggestionSubmit'])->name('kritik-saran.submit');
+
 // Profil Routes
 Route::get('/profil/sejarah', function() {
     $menuItems = \App\Models\Menu::where('is_active', true)

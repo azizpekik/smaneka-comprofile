@@ -9,6 +9,7 @@ use App\Models\Extracurricular;
 use App\Models\Gallery;
 use App\Models\Album;
 use App\Models\Category;
+use App\Models\Suggestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -221,5 +222,52 @@ class FrontendController extends Controller
         
         // Redirect back with success
         return redirect()->route('guestbook')->with('success', 'Terima kasih! Pesan Anda telah tercatat.');
+    }
+
+    public function suggestion()
+    {
+        // Get menu items for header
+        $menuItems = \App\Models\Menu::where('is_active', true)
+            ->whereNull('parent_id')
+            ->with('children')
+            ->orderBy('order')
+            ->get();
+
+        return view('unipulse.suggestion', compact('menuItems'));
+    }
+
+    public function suggestionSubmit(Request $request)
+    {
+        // Validate
+        $validated = $request->validate([
+            'name' => 'required|string|min:3|max:100',
+            'email' => 'required|email|max:100',
+            'phone' => 'required|string|min:10|max:15',
+            'message' => 'required|string|min:10|max:1000',
+            'captcha' => 'required|captcha',
+        ], [
+            'name.required' => 'Nama harus diisi.',
+            'name.min' => 'Nama minimal 3 karakter.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'phone.required' => 'No. HP harus diisi.',
+            'phone.min' => 'No. HP minimal 10 digit.',
+            'message.required' => 'Kritik & Saran harus diisi.',
+            'message.min' => 'Kritik & Saran minimal 10 karakter.',
+            'captcha.required' => 'Captcha harus diisi.',
+            'captcha.captcha' => 'Captcha tidak valid.',
+        ]);
+
+        // Create suggestion entry
+        Suggestion::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'message' => $validated['message'],
+            'status' => Suggestion::STATUS_BARU,
+        ]);
+
+        // Redirect back with success
+        return redirect()->route('kritik-saran')->with('success', 'Terima kasih atas kritik dan sarannya. Kami akan meninjau pesan Anda.');
     }
 }
