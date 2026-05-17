@@ -54,6 +54,38 @@ class ExtracurricularResource extends Resource
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg'])
                             ->columnSpanFull(),
                     ]),
+                Forms\Components\Section::make('Manfaat Bergabung')
+                    ->description('Daftar manfaat yang didapatkan siswa saat bergabung')
+                    ->schema([
+                        Forms\Components\Repeater::make('benefits')
+                            ->label('')
+                            ->schema([
+                                Forms\Components\TextInput::make('item')
+                                    ->label('Manfaat')
+                                    ->placeholder('Contoh: Mengembangkan bakat dan minat')
+                                    ->required(),
+                            ])
+                            ->minItems(1)
+                            ->maxItems(10)
+                            ->addActionLabel('Tambah Manfaat')
+                            ->deleteActionLabel('Hapus')
+                            ->reorderable()
+                            ->collapsible()
+                            ->columnSpanFull(),
+                    ]),
+                Forms\Components\Section::make('Kontak & Ajakan')
+                    ->schema([
+                        Forms\Components\TextInput::make('wa_number')
+                            ->label('Nomor WhatsApp')
+                            ->placeholder('0812-3456-7890')
+                            ->prefix('+62')
+                            ->tel()
+                            ->helperText('Nomor WA untuk info lebih lanjut'),
+                        Forms\Components\TextInput::make('cta_text')
+                            ->label('Kalimat Ajakan')
+                            ->placeholder('Tertarik? Hubungi kami untuk info lebih lanjut!')
+                            ->helperText('Teks yang muncul di tombol/modal'),
+                    ])->columns(2),
             ]);
     }
 

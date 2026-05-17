@@ -64,6 +64,10 @@ class TestSeeder extends Seeder
             ['key' => 'who_we_are_mission', 'value' => 'Menyelenggarakan pendidikan berkualitas dengan standar nasional dan internasional, mengembangkan potensi akademik dan non-akademik siswa secara optimal, serta menanamkan nilai-nilai karakter dan budi pekerti luhur.', 'type' => 'textarea'],
             ['key' => 'who_we_are_vision_title', 'value' => 'Our Vision', 'type' => 'text'],
             ['key' => 'who_we_are_vision', 'value' => 'Menjadi sekolah unggulan yang menghasilkan generasi cerdas, berkarakter, dan berdaya saing global berlandaskan iman dan taqwa.', 'type' => 'textarea'],
+            
+            // About Badge Settings
+            ['key' => 'about_badge_years', 'value' => '25+', 'type' => 'text'],
+            ['key' => 'about_badge_label', 'value' => 'Years of Excellence', 'type' => 'text'],
 
             // Hero Settings
             ['key' => 'hero_title', 'value' => 'Sekolah Unggulan Berprestasi', 'type' => 'text'],

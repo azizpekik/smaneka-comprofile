@@ -181,8 +181,8 @@
               <div class="swiper-pagination about-pagination"></div>
             </div>
             <div class="experience-badge">
-              <span class="years">25+</span>
-              <span class="label">Years of Excellence</span>
+              <span class="years">{{ setting('about_badge_years', '25+') }}</span>
+              <span class="label">{{ setting('about_badge_label', 'Years of Excellence') }}</span>
             </div>
           </div>
         </div>

@@ -72,7 +72,7 @@
             <p id="modalExtracurricularDesc"></p>
             <div class="modal-features">
               <h4>Manfaat Bergabung:</h4>
-              <ul>
+              <ul id="modalExtracurricularBenefits">
                 <li><i class="bi bi-check-circle-fill"></i> Mengembangkan bakat dan minat</li>
                 <li><i class="bi bi-check-circle-fill"></i> Melatih kepemimpinan dan teamwork</li>
                 <li><i class="bi bi-check-circle-fill"></i> Memperluas relasi dan pertemanan</li>
@@ -81,25 +81,9 @@
               </ul>
             </div>
             <div class="modal-cta">
-              @php
-                $whatsappNumber = setting('contact_whatsapp', '');
-                $cleanNumber = preg_replace('/[^0-9]/', '', $whatsappNumber);
-                
-                if (strlen($cleanNumber) > 0) {
-                  if (str_starts_with($cleanNumber, '0')) {
-                    $cleanNumber = '62' . substr($cleanNumber, 1);
-                  }
-                  if (!str_starts_with($cleanNumber, '62') && strlen($cleanNumber) >= 10) {
-                    $cleanNumber = '62' . $cleanNumber;
-                  }
-                  $whatsappBaseLink = 'https://wa.me/' . $cleanNumber . '?text=';
-                } else {
-                  $whatsappBaseLink = '#';
-                }
-              @endphp
-              <a href="{{ $whatsappBaseLink }}" target="_blank" rel="noopener" class="btn-join" id="btnGabungWhatsApp" data-base-text="Halo, saya tertarik untuk bergabung dengan ekstrakurikuler ">
+              <a href="#" target="_blank" rel="noopener" class="btn-join" id="btnGabungWhatsApp">
                 <i class="bi bi-whatsapp"></i>
-                <span>Gabung Sekarang via WhatsApp</span>
+                <span id="modalExtracurricularCta">Gabung Sekarang via WhatsApp</span>
               </a>
             </div>
           </div>
@@ -151,14 +135,67 @@
     // Set description
     document.getElementById('modalExtracurricularDesc').textContent = extracurricular.description || 'Deskripsi belum tersedia.';
     
-    // Update WhatsApp link with extracurricular name
-    const btnGabung = document.getElementById('btnGabungWhatsApp');
-    if (btnGabung && btnGabung.href !== '#') {
-      const baseText = btnGabung.getAttribute('data-base-text') || 'Halo, saya tertarik untuk bergabung dengan ekstrakurikuler ';
-      const fullMessage = encodeURIComponent(baseText + extracurricular.name);
-      const baseHref = btnGabung.href.split('?')[0];
-      btnGabung.href = baseHref + '?text=' + fullMessage;
+    // Set benefits
+    const benefitsList = document.getElementById('modalExtracurricularBenefits');
+    if (extracurricular.benefits && extracurricular.benefits.length > 0) {
+      benefitsList.innerHTML = extracurricular.benefits.map(benefit => 
+        `<li><i class="bi bi-check-circle-fill"></i> ${benefit.item}</li>`
+      ).join('');
+    } else {
+      // Default benefits
+      benefitsList.innerHTML = `
+        <li><i class="bi bi-check-circle-fill"></i> Mengembangkan bakat dan minat</li>
+        <li><i class="bi bi-check-circle-fill"></i> Melatih kepemimpinan dan teamwork</li>
+        <li><i class="bi bi-check-circle-fill"></i> Memperluas relasi dan pertemanan</li>
+        <li><i class="bi bi-check-circle-fill"></i> Meningkatkan kreativitas dan skill</li>
+        <li><i class="bi bi-check-circle-fill"></i> Berpartisipasi dalam kompetisi</li>
+      `;
     }
+    
+    // Set CTA text
+    const ctaText = extracurricular.cta_text || 'Gabung Sekarang via WhatsApp';
+    document.getElementById('modalExtracurricularCta').textContent = ctaText;
+    
+    // Update WhatsApp link
+    const btnGabung = document.getElementById('btnGabungWhatsApp');
+    let waLink = '#';
+    
+    if (extracurricular.wa_number) {
+      // Clean and format WA number
+      let waNumber = extracurricular.wa_number.replace(/[^0-9]/g, '');
+      if (waNumber.startsWith('0')) {
+        waNumber = '62' + waNumber.substring(1);
+      } else if (!waNumber.startsWith('62')) {
+        waNumber = '62' + waNumber;
+      }
+      
+      const message = encodeURIComponent(`Halo, saya tertarik untuk bergabung dengan ekstrakurikuler ${extracurricular.name}`);
+      waLink = `https://wa.me/${waNumber}?text=${message}`;
+      btnGabung.style.display = 'inline-flex';
+    } else {
+      // Fallback to global contact whatsapp
+      @php
+        $globalWa = setting('contact_whatsapp', '');
+        $globalClean = preg_replace('/[^0-9]/', '', $globalWa);
+        if (strlen($globalClean) > 0) {
+          if (str_starts_with($globalClean, '0')) {
+            $globalClean = '62' . substr($globalClean, 1);
+          } elseif (!str_starts_with($globalClean, '62')) {
+            $globalClean = '62' . $globalClean;
+          }
+        }
+      @endphp
+      
+      @if($globalClean)
+        const message = encodeURIComponent(`Halo, saya tertarik untuk bergabung dengan ekstrakurikuler ${extracurricular.name}`);
+        waLink = `https://wa.me/{{ $globalClean }}?text=${message}`;
+        btnGabung.style.display = 'inline-flex';
+      @else
+        btnGabung.style.display = 'none';
+      @endif
+    }
+    
+    btnGabung.href = waLink;
   }
 
   // Make function globally accessible
