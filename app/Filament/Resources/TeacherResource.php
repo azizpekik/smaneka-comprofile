@@ -59,6 +59,26 @@ class TeacherResource extends Resource
                             ->rows(4)
                             ->columnSpanFull(),
                     ]),
+                Forms\Components\Section::make('PIN & Prioritas')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_pinned')
+                            ->label('PIN ke Halaman Utama')
+                            ->helperText('Guru yang di-PIN akan tampil di urutan paling atas (Maksimal 10 guru)')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                if ($state) {
+                                    $set('pin_order', Teacher::getNextPinOrder());
+                                } else {
+                                    $set('pin_order', 0);
+                                }
+                            }),
+                        Forms\Components\TextInput::make('pin_order')
+                            ->label('Urutan PIN')
+                            ->numeric()
+                            ->default(0)
+                            ->helperText('Semakin kecil angka, semakin atas posisinya')
+                            ->visible(fn (Forms\Get $get) => $get('is_pinned')),
+                    ])->columns(2),
             ]);
     }
 
@@ -66,19 +86,31 @@ class TeacherResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\IconColumn::make('is_pinned')
+                    ->label('PIN')
+                    ->boolean()
+                    ->trueIcon('heroicon-s-star')
+                    ->falseIcon('heroicon-o-star')
+                    ->trueColor('warning')
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('photo')
                     ->label('Foto')
                     ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight(fn ($record) => $record->is_pinned ? 'bold' : 'normal'),
                 Tables\Columns\TextColumn::make('position')
                     ->label('Jabatan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
                     ->label('Mata Pelajaran')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('pin_order')
+                    ->label('Urutan')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()
@@ -86,9 +118,50 @@ class TeacherResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_pinned')
+                    ->label('Status PIN'),
             ])
             ->actions([
+                Tables\Actions\Action::make('togglePin')
+                    ->label(fn ($record) => $record->is_pinned ? 'Lepas PIN' : 'PIN Guru')
+                    ->icon(fn ($record) => $record->is_pinned ? 'heroicon-s-star' : 'heroicon-o-star')
+                    ->color(fn ($record) => $record->is_pinned ? 'gray' : 'warning')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn ($record) => $record->is_pinned ? 'Lepas PIN Guru' : 'PIN Guru')
+                    ->modalDescription(fn ($record) => $record->is_pinned 
+                        ? 'Guru ini tidak akan lagi tampil di urutan paling atas.' 
+                        : 'Guru ini akan tampil di urutan paling atas. Maksimal 10 guru yang bisa di-PIN.')
+                    ->modalSubmitActionLabel(fn ($record) => $record->is_pinned ? 'Ya, Lepas PIN' : 'Ya, PIN Guru')
+                    ->action(function ($record) {
+                        if ($record->is_pinned) {
+                            // Unpin
+                            $record->update([
+                                'is_pinned' => false,
+                                'pin_order' => 0,
+                            ]);
+                        } else {
+                            // Pin
+                            if (Teacher::isPinLimitReached()) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Batas PIN Tercapai')
+                                    ->body('Maksimal 10 guru yang bisa di-PIN. Lepaskan PIN dari guru lain terlebih dahulu.')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+                            
+                            $record->update([
+                                'is_pinned' => true,
+                                'pin_order' => Teacher::getNextPinOrder(),
+                            ]);
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Berhasil di-PIN')
+                                ->body("{$record->name} sekarang ditampilkan di urutan paling atas.")
+                                ->success()
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make()
                         ->label('Edit')
@@ -118,6 +191,8 @@ class TeacherResource extends Resource
                         ->modalCancelActionLabel('Batal'),
                 ]),
             ])
+            ->reorderable('pin_order')
+            ->defaultSort('is_pinned', 'desc')
             ->headerActions([]);
     }
 

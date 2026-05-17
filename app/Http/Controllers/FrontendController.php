@@ -117,9 +117,14 @@ class FrontendController extends Controller
             ->orderBy('order')
             ->get();
         
-        $teachers = Teacher::orderBy('name')->get();
+        // Get all teachers ordered: PIN first, then by name
+        $teachers = Teacher::ordered()->get();
+        
+        // Separate pinned and unpinned for display logic
+        $pinnedTeachers = $teachers->where('is_pinned', true);
+        $unpinnedTeachers = $teachers->where('is_pinned', false);
 
-        return view('unipulse.teachers', compact('menuItems', 'teachers'));
+        return view('unipulse.teachers', compact('menuItems', 'teachers', 'pinnedTeachers', 'unpinnedTeachers'));
     }
     
     public function achievements(Request $request)
