@@ -68,7 +68,6 @@ class ExtracurricularResource extends Resource
                             ->minItems(1)
                             ->maxItems(10)
                             ->addActionLabel('Tambah Manfaat')
-                            ->deleteActionLabel('Hapus')
                             ->reorderable()
                             ->collapsible()
                             ->columnSpanFull(),
