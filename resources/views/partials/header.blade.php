@@ -79,6 +79,9 @@
               </li>
               @endif
             @endforeach
+            
+            <!-- Hardcoded Menu Kritik & Saran -->
+            <li><a href="{{ route('kritik-saran') }}" class="{{ request()->routeIs('kritik-saran') ? 'active' : '' }}">Kritik & Saran</a></li>
           @else
           <!-- Default menu if no menuItems -->
           <li><a href="#about">About</a></li>
