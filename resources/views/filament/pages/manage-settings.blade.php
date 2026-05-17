@@ -175,7 +175,7 @@
         <x-filament::section>
             <x-slot name="heading">
                 <div class="flex items-center gap-2">
-                    <x-heroicon-o-award class="w-5 h-5" />
+                    <x-heroicon-o-star class="w-5 h-5" />
                     About Badge (Logo Pengalaman)
                 </div>
             </x-slot>
