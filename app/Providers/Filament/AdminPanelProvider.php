@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id("admin")
-            ->path("smaneka-panel")
+            ->path("panel")
             ->login()
             ->colors([
                 "primary" => Color::hex("#313575"),
