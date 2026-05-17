@@ -171,6 +171,48 @@
             </div>
         </x-filament::section>
 
+        {{-- About Badge Settings --}}
+        <x-filament::section>
+            <x-slot name="heading">
+                <div class="flex items-center gap-2">
+                    <x-heroicon-o-award class="w-5 h-5" />
+                    About Badge (Logo Pengalaman)
+                </div>
+            </x-slot>
+            <x-slot name="description">
+                Badge yang muncul di section About/Who We Are (sebelah gambar)
+            </x-slot>
+
+            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-4">
+                <div class="flex gap-3">
+                    <x-heroicon-o-information-circle class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div class="text-sm text-amber-700 dark:text-amber-300">
+                        <p class="font-semibold mb-1">Lokasi di Frontpage:</p>
+                        <p>Badge "25+ Years of Excellence" di pojok kanan bawah gambar section About</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                @foreach($textSettings->filter(fn($s) => str_starts_with($s->key, 'about_badge_')) as $setting)
+                    <div>
+                        <label class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+                            <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                                {{ ucwords(str_replace('_', ' ', $setting->key)) }}
+                            </span>
+                        </label>
+
+                        <input
+                            type="text"
+                            wire:model="settings.{{ $setting->key }}"
+                            value="{{ old('settings.' . $setting->key, $setting->value) }}"
+                            class="fi-input block w-full rounded-lg border-gray-200 bg-white shadow-sm transition duration-75 focus:border-primary-500 focus:ring-1 focus:ring-inset focus:ring-primary-500 disabled:opacity-70 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        />
+                    </div>
+                @endforeach
+            </div>
+        </x-filament::section>
+
         {{-- General & Contact Settings --}}
         <x-filament::section>
             <x-slot name="heading">
