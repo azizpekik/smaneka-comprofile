@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id("admin")
-            ->path("admin")
+            ->path("manage")
             ->login()
             ->colors([
                 "primary" => Color::hex("#313575"),
