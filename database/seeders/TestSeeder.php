@@ -70,6 +70,7 @@ class TestSeeder extends Seeder
             ['key' => 'hero_subtitle', 'value' => 'Mewujudkan Generasi Cerdas, Berkarakter, dan Berdaya Saing Global', 'type' => 'textarea'],
             ['key' => 'hero_button_text', 'value' => 'Daftar Sekarang', 'type' => 'text'],
             ['key' => 'hero_button_url', 'value' => '/admin', 'type' => 'url'],
+            ['key' => 'hero_description', 'value' => 'SMANeka berkomitmen mencetak lulusan yang tidak hanya unggul dalam akademik, tetapi juga memiliki karakter kuat dan siap menghadapi tantangan masa depan.', 'type' => 'textarea'],
             
             // Stats Settings
             ['key' => 'stat_1_label', 'value' => 'Kelulusan PTN', 'type' => 'text'],

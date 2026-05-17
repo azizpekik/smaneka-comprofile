@@ -14,7 +14,7 @@
           <div class="hero-copy">
             <div class="top-badge"><i class="bi bi-mortarboard-fill"></i><span>{{ setting('hero_title', 'Sekolah Unggulan Berprestasi') }}</span></div>
             <h1>{{ setting('hero_subtitle', 'Mewujudkan Generasi Cerdas, Berkarakter, dan Berdaya Saing Global') }}</h1>
-            <p>SMANeka berkomitmen mencetak lulusan yang tidak hanya unggul dalam akademik, tetapi juga memiliki karakter kuat dan siap menghadapi tantangan masa depan.</p>
+            <p>{{ setting('hero_description', 'SMANeka berkomitmen mencetak lulusan yang tidak hanya unggul dalam akademik, tetapi juga memiliki karakter kuat dan siap menghadapi tantangan masa depan.') }}</p>
             <div class="stats-strip">
               <div class="s-item"><strong>{{ setting('stat_1_value', '98%') }}</strong><span>{{ setting('stat_1_label', 'Kelulusan PTN') }}</span></div>
               <div class="s-divider"></div>
