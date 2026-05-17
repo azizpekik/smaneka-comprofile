@@ -15,15 +15,21 @@
       <p>Kenali lebih dekat para pendidik profesional yang berkomitmen untuk kesuksesan siswa</p>
     </div><!-- End Section Title -->
 
+    <!-- Teachers Grid - Load per 4 -->
     <div class="row gy-4" id="teachersGrid" data-aos="fade-up" data-aos-delay="100">
-      @foreach($teachers as $teacher)
-      <div class="col-lg-3 col-md-6">
-        <div class="teacher-card" data-teacher-id="{{ $teacher->id }}" style="cursor: pointer;" onclick="openTeacherModal({{ $teacher->id }})">
+      @foreach($teachers as $index => $teacher)
+      <div class="col-lg-3 col-md-6 teacher-item" data-index="{{ $index }}" data-page="{{ ceil(($index + 1) / 4) }}">
+        <div class="teacher-card @if($teacher->is_pinned) teacher-card-pinned @endif" data-teacher-id="{{ $teacher->id }}" style="cursor: pointer;" onclick="openTeacherModal({{ $teacher->id }})">
+          @if($teacher->is_pinned)
+          <div class="pin-badge" title="Guru Unggulan">
+            <i class="bi bi-star-fill"></i>
+          </div>
+          @endif
           <div class="teacher-img">
             @if($teacher->photo)
-            <img src="{{ asset('storage/' . $teacher->photo) }}" alt="{{ $teacher->name }}" class="img-fluid">
+            <img data-src="{{ asset('storage/' . $teacher->photo) }}" alt="{{ $teacher->name }}" class="img-fluid lazy-image" decoding="async">
             @else
-            <img src="{{ asset('assets/img/person/person-1.webp') }}" alt="{{ $teacher->name }}" class="img-fluid">
+            <img data-src="{{ asset('assets/img/person/person-1.webp') }}" alt="{{ $teacher->name }}" class="img-fluid lazy-image" decoding="async">
             @endif
           </div>
           <div class="teacher-info">
@@ -45,6 +51,21 @@
       </div>
       @endforeach
     </div>
+
+    <!-- Sentinel for Infinite Scroll -->
+    @if($teachers->count() > 4)
+    <div id="scrollSentinel" class="scroll-sentinel">
+      <div class="loading-spinner">
+        <i class="bi bi-arrow-clockwise"></i>
+        <span>Memuat...</span>
+      </div>
+    </div>
+    <div id="loadComplete" class="load-complete" style="display: none;">
+      <p class="text-muted">
+        <i class="bi bi-check-circle"></i> Semua guru telah ditampilkan
+      </p>
+    </div>
+    @endif
 
   </div>
 </section>
@@ -108,6 +129,114 @@
   // Store all teachers data
   const teachers = @json($teachers);
   let currentTeacherIndex = 0;
+  let currentPage = 1;
+  const itemsPerPage = 4;
+  const totalTeachers = teachers.length;
+  const totalPages = Math.ceil(totalTeachers / itemsPerPage);
+
+  // Initialize - show only first 4 items
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeLazyLoading();
+    setupInfiniteScroll();
+  });
+
+  function initializeLazyLoading() {
+    // Show first 4 items immediately
+    const allItems = document.querySelectorAll('.teacher-item');
+    allItems.forEach((item, index) => {
+      if (index < 4) {
+        item.style.display = 'block';
+        item.classList.add('visible');
+        loadImage(item);
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Hide sentinel if no more items
+    if (totalTeachers <= 4) {
+      const sentinel = document.getElementById('scrollSentinel');
+      if (sentinel) {
+        sentinel.style.display = 'none';
+      }
+    }
+  }
+
+  function setupInfiniteScroll() {
+    const sentinel = document.getElementById('scrollSentinel');
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && currentPage < totalPages) {
+          loadMoreTeachers();
+        }
+      });
+    }, {
+      rootMargin: '100px',
+      threshold: 0.1
+    });
+
+    observer.observe(sentinel);
+  }
+
+  function loadImage(item) {
+    const img = item.querySelector('.lazy-image');
+    if (img && img.dataset.src) {
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+      img.classList.add('loaded');
+    }
+  }
+
+  function loadMoreTeachers() {
+    if (currentPage >= totalPages) return;
+
+    const sentinel = document.getElementById('scrollSentinel');
+    const loadingSpinner = sentinel.querySelector('.loading-spinner');
+    
+    // Show loading state
+    loadingSpinner.style.display = 'flex';
+
+    // Simulate small delay for better UX
+    setTimeout(() => {
+      currentPage++;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = Math.min(startIndex + itemsPerPage, totalTeachers);
+      
+      const allItems = document.querySelectorAll('.teacher-item');
+      let newlyVisible = 0;
+      
+      for (let i = startIndex; i < endIndex; i++) {
+        const item = allItems[i];
+        if (item) {
+          item.style.display = 'block';
+          item.classList.add('visible');
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(20px)';
+          loadImage(item);
+          
+          // Animate in
+          setTimeout(() => {
+            item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+          }, newlyVisible * 100);
+          
+          newlyVisible++;
+        }
+      }
+      
+      // Hide loading spinner
+      loadingSpinner.style.display = 'none';
+      
+      // If all loaded, hide sentinel and show complete message
+      if (currentPage >= totalPages) {
+        sentinel.style.display = 'none';
+        document.getElementById('loadComplete').style.display = 'block';
+      }
+    }, 300);
+  }
 
   function openTeacherModal(teacherId) {
     // Find teacher index
@@ -196,6 +325,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.4s ease;
     position: relative;
+    will-change: transform;
   }
 
   .teacher-card:hover {
@@ -203,17 +333,52 @@
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
   }
 
+  .teacher-card-pinned {
+    border: 2px solid rgba(251, 191, 36, 0.5);
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
+  }
+
+  .teacher-card-pinned:hover {
+    box-shadow: 0 12px 35px rgba(251, 191, 36, 0.25);
+  }
+
+  .pin-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  }
+
+  .pin-badge i {
+    font-size: 1rem;
+  }
+
   .teacher-img {
     position: relative;
     overflow: hidden;
     height: 280px;
+    background: #f8f9fa;
   }
 
   .teacher-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .teacher-img img.loaded {
+    opacity: 1;
   }
 
   .teacher-card:hover .teacher-img img {
@@ -281,6 +446,46 @@
 
   .view-profile i {
     font-size: 1.25rem;
+  }
+
+  /* Infinite Scroll Sentinel */
+  .scroll-sentinel {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 500;
+  }
+
+  .loading-spinner i {
+    font-size: 1.5rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .load-complete {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .load-complete p {
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+    font-size: 0.9375rem;
+  }
+
+  .load-complete i {
+    color: #10b981;
+    margin-right: 0.5rem;
   }
 
   /* Modal Styles */
