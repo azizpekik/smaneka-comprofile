@@ -72,32 +72,58 @@
 
 @push('styles')
 <style>
-  .footer .copyright,
-  .footer .copyright * {
+  /* Hilangkan background kotak copyright */
+  .footer .copyright {
     background: none !important;
     background-color: transparent !important;
     background-image: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    margin-top: 0 !important;
   }
-  .footer .copyright {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+  
+  /* Pastikan semua child element juga tidak ada background */
+  .footer .copyright *,
+  .footer .copyright *::before,
+  .footer .copyright *::after {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border: none !important;
   }
+  
+  /* Style teks copyright */
   .footer .copyright p,
   .footer .copyright span,
   .footer .copyright strong {
     color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.9rem !important;
   }
+  /* Style developer credit */
+  .footer .developer-credit {
+    background: none !important;
+    background-color: transparent !important;
+    margin-top: 5px !important;
+  }
+  
   .footer .developer-credit,
   .footer .developer-credit a,
   .footer .developer-credit a:visited,
   .footer .developer-credit a:hover,
   .footer .developer-credit a:active {
-    color: #ffffff !important;
-    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-decoration: none !important;
+    font-size: 0.8rem !important;
+    background: none !important;
+    background-color: transparent !important;
   }
+  
   .footer .developer-credit a:hover {
     opacity: 0.7;
-    text-decoration: underline;
+    text-decoration: underline !important;
   }
   #footer .footer-contact a,
   #footer .footer-contact a:visited,
