@@ -30,11 +30,38 @@
         </div>
         <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
           <div class="hero-visual">
-            @if(setting('header_image'))
-            <img src="{{ asset('storage/' . setting('header_image')) }}" alt="Kampus SMANeka" class="img-fluid campus-photo">
-            @else
-            <img src="{{ asset('assets/img/education/showcase-1.webp') }}" alt="Kampus SMANeka" class="img-fluid campus-photo">
-            @endif
+            <!-- Hero Slider -->
+            <div class="swiper hero-slider">
+              <div class="swiper-wrapper">
+                @if($heroSliders->count() > 0)
+                  @foreach($heroSliders as $slider)
+                    <div class="swiper-slide">
+                      @if($slider->link)
+                        <a href="{{ $slider->link }}" class="slider-link">
+                      @endif
+                        <img src="{{ asset('storage/' . $slider->image_path) }}" alt="{{ $slider->caption ?? 'Kampus SMANeka' }}" class="img-fluid campus-photo">
+                        @if($slider->caption)
+                          <div class="slide-caption">{{ $slider->caption }}</div>
+                        @endif
+                      @if($slider->link)
+                        </a>
+                      @endif
+                    </div>
+                  @endforeach
+                @else
+                  <!-- Default Image -->
+                  <div class="swiper-slide">
+                    @if(setting('header_image'))
+                      <img src="{{ asset('storage/' . setting('header_image')) }}" alt="Kampus SMANeka" class="img-fluid campus-photo">
+                    @else
+                      <img src="{{ asset('assets/img/education/showcase-1.webp') }}" alt="Kampus SMANeka" class="img-fluid campus-photo">
+                    @endif
+                  </div>
+                @endif
+              </div>
+              <!-- Pagination -->
+              <div class="swiper-pagination hero-pagination"></div>
+            </div>
             <div class="accred-card">
               <i class="bi bi-patch-check-fill"></i>
               <div><strong>Terakreditasi A</strong><span>Unggul & Berkualitas</span></div>
@@ -118,14 +145,41 @@
 
     <div class="container" data-aos="fade-up" data-aos-delay="100">
       <div class="row g-5 align-items-stretch">
-        <!-- Left - Image with Badge -->
+        <!-- Left - Image Slider with Badge -->
         <div class="col-lg-5" data-aos="fade-right" data-aos-delay="150">
           <div class="campus-showcase">
-            @if(setting('who_we_are_image'))
-            <img src="{{ asset('storage/' . setting('who_we_are_image')) }}" alt="Kepala Sekolah SMANeka" class="img-fluid">
-            @else
-            <img src="{{ asset('assets/img/education/kepala-sekolah.jpg') }}" alt="Kepala Sekolah SMANeka" class="img-fluid">
-            @endif
+            <!-- About Slider -->
+            <div class="swiper about-slider">
+              <div class="swiper-wrapper">
+                @if($aboutSliders->count() > 0)
+                  @foreach($aboutSliders as $slider)
+                    <div class="swiper-slide">
+                      @if($slider->link)
+                        <a href="{{ $slider->link }}" class="slider-link">
+                      @endif
+                        <img src="{{ asset('storage/' . $slider->image_path) }}" alt="{{ $slider->caption ?? 'SMANeka' }}" class="img-fluid">
+                        @if($slider->caption)
+                          <div class="slide-caption about-caption">{{ $slider->caption }}</div>
+                        @endif
+                      @if($slider->link)
+                        </a>
+                      @endif
+                    </div>
+                  @endforeach
+                @else
+                  <!-- Default Image -->
+                  <div class="swiper-slide">
+                    @if(setting('who_we_are_image'))
+                      <img src="{{ asset('storage/' . setting('who_we_are_image')) }}" alt="Kepala Sekolah SMANeka" class="img-fluid">
+                    @else
+                      <img src="{{ asset('assets/img/education/kepala-sekolah.jpg') }}" alt="Kepala Sekolah SMANeka" class="img-fluid">
+                    @endif
+                  </div>
+                @endif
+              </div>
+              <!-- Pagination -->
+              <div class="swiper-pagination about-pagination"></div>
+            </div>
             <div class="experience-badge">
               <span class="years">25+</span>
               <span class="label">Years of Excellence</span>
@@ -289,6 +343,98 @@
 
 @endsection
 
+@push('styles')
+<style>
+  /* Hero & About Slider Styles */
+  .hero-slider,
+  .about-slider {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .hero-slider .swiper-slide,
+  .about-slider .swiper-slide {
+    position: relative;
+  }
+
+  .hero-slider .swiper-slide img,
+  .about-slider .swiper-slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .slide-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+  }
+
+  .about-caption {
+    left: 20px;
+    transform: none;
+    text-align: left;
+  }
+
+  .slider-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .slider-link:hover .slide-caption {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  /* Swiper Pagination Customization */
+  .hero-pagination,
+  .about-pagination {
+    bottom: 10px !important;
+  }
+
+  .hero-pagination .swiper-pagination-bullet,
+  .about-pagination .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+  }
+
+  .hero-pagination .swiper-pagination-bullet-active,
+  .about-pagination .swiper-pagination-bullet-active {
+    background: #fff;
+  }
+
+  /* Campus showcase adjustments for slider */
+  .campus-showcase {
+    position: relative;
+  }
+
+  .campus-showcase .about-slider {
+    border-radius: 12px;
+  }
+
+  .experience-badge {
+    z-index: 20;
+  }
+
+  .accred-card {
+    z-index: 20;
+  }
+</style>
+@endpush
+
 @push('scripts')
 <script>
   let player = null;
@@ -359,6 +505,42 @@
     modalElement?.addEventListener('hidden.bs.modal', function () {
       stopVideo();
     });
+
+    // Initialize Hero Swiper Slider
+    const heroSlider = document.querySelector('.hero-slider');
+    if (heroSlider && typeof Swiper !== 'undefined') {
+      new Swiper('.hero-slider', {
+        loop: true,
+        autoplay: {
+          delay: 5000, // 5 detik
+          disableOnInteraction: false,
+        },
+        effect: 'slide',
+        pagination: {
+          el: '.hero-pagination',
+          clickable: true,
+        },
+        grabCursor: true,
+      });
+    }
+
+    // Initialize About Swiper Slider
+    const aboutSlider = document.querySelector('.about-slider');
+    if (aboutSlider && typeof Swiper !== 'undefined') {
+      new Swiper('.about-slider', {
+        loop: true,
+        autoplay: {
+          delay: 5000, // 5 detik
+          disableOnInteraction: false,
+        },
+        effect: 'slide',
+        pagination: {
+          el: '.about-pagination',
+          clickable: true,
+        },
+        grabCursor: true,
+      });
+    }
   });
 </script>
 @endpush

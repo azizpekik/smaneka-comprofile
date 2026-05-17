@@ -9,6 +9,8 @@ use App\Models\Extracurricular;
 use App\Models\Gallery;
 use App\Models\Album;
 use App\Models\Category;
+use App\Models\HeroSlider;
+use App\Models\AboutSlider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +32,19 @@ class FrontendController extends Controller
             ->limit(5)
             ->get();
         
-        return view('unipulse.home', compact('menuItems', 'latestPosts'));
+        // Get hero sliders (max 10)
+        $heroSliders = HeroSlider::active()
+            ->ordered()
+            ->limit(10)
+            ->get();
+        
+        // Get about sliders (max 10)
+        $aboutSliders = AboutSlider::active()
+            ->ordered()
+            ->limit(10)
+            ->get();
+        
+        return view('unipulse.home', compact('menuItems', 'latestPosts', 'heroSliders', 'aboutSliders'));
     }
     
     public function posts(Request $request, $categorySlug = null)
