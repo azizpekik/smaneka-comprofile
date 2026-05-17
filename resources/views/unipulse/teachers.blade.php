@@ -173,11 +173,38 @@
         }
       });
     }, {
-      rootMargin: '100px',
-      threshold: 0.1
+      rootMargin: '300px 0px', // Tingkatkan jarak deteksi ke 300px
+      threshold: 0
     });
 
     observer.observe(sentinel);
+    
+    // Setup image lazy loading
+    setupImageLazyLoad();
+  }
+  
+  function setupImageLazyLoad() {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+            img.classList.add('loaded');
+            imageObserver.unobserve(img);
+          }
+        }
+      });
+    }, {
+      rootMargin: '50px 0px',
+      threshold: 0
+    });
+    
+    // Observe all lazy images
+    document.querySelectorAll('.lazy-image').forEach(img => {
+      imageObserver.observe(img);
+    });
   }
 
   function loadImage(item) {
@@ -198,44 +225,51 @@
     // Show loading state
     loadingSpinner.style.display = 'flex';
 
-    // Simulate small delay for better UX
-    setTimeout(() => {
-      currentPage++;
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = Math.min(startIndex + itemsPerPage, totalTeachers);
-      
-      const allItems = document.querySelectorAll('.teacher-item');
-      let newlyVisible = 0;
-      
-      for (let i = startIndex; i < endIndex; i++) {
-        const item = allItems[i];
-        if (item) {
-          item.style.display = 'block';
-          item.classList.add('visible');
-          item.style.opacity = '0';
-          item.style.transform = 'translateY(20px)';
-          loadImage(item);
-          
-          // Animate in
+    // Load immediately tanpa delay
+    currentPage++;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalTeachers);
+    
+    const allItems = document.querySelectorAll('.teacher-item');
+    let newlyVisible = 0;
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      const item = allItems[i];
+      if (item) {
+        item.style.display = 'block';
+        item.classList.add('visible');
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        // Load image with new observer
+        const img = item.querySelector('.lazy-image');
+        if (img && img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          img.classList.add('loaded');
+        }
+        
+        // Animate in dengan requestAnimationFrame untuk smoothness
+        requestAnimationFrame(() => {
           setTimeout(() => {
             item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             item.style.opacity = '1';
             item.style.transform = 'translateY(0)';
-          }, newlyVisible * 100);
-          
-          newlyVisible++;
-        }
+          }, newlyVisible * 50); // Reduce delay to 50ms
+        });
+        
+        newlyVisible++;
       }
-      
-      // Hide loading spinner
-      loadingSpinner.style.display = 'none';
-      
-      // If all loaded, hide sentinel and show complete message
-      if (currentPage >= totalPages) {
-        sentinel.style.display = 'none';
-        document.getElementById('loadComplete').style.display = 'block';
-      }
-    }, 300);
+    }
+    
+    // Hide loading spinner
+    loadingSpinner.style.display = 'none';
+    
+    // If all loaded, hide sentinel and show complete message
+    if (currentPage >= totalPages) {
+      sentinel.style.display = 'none';
+      document.getElementById('loadComplete').style.display = 'block';
+    }
   }
 
   function openTeacherModal(teacherId) {
@@ -450,8 +484,12 @@
 
   /* Infinite Scroll Sentinel */
   .scroll-sentinel {
-    padding: 2rem;
+    padding: 3rem 2rem;
     text-align: center;
+    min-height: 100px; /* Tambah tinggi untuk deteksi lebih awal */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .loading-spinner {
@@ -461,6 +499,9 @@
     gap: 0.75rem;
     color: var(--accent-color);
     font-weight: 500;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
   }
 
   .loading-spinner i {
