@@ -373,15 +373,19 @@
 
   .modal-img-wrapper {
     width: 100%;
-    height: 300px;
     overflow: hidden;
     background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .modal-img-wrapper img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
+    max-height: 70vh;
+    object-fit: contain;
   }
 
   .modal-info {
@@ -460,24 +464,11 @@
     font-size: 1.25rem;
   }
 
-  @media (min-width: 768px) {
-    .extracurricular-modal-content {
-      flex-direction: row;
-    }
-
-    .modal-img-wrapper {
-      width: 50%;
-      height: auto;
-      min-height: 500px;
-    }
-
-    .modal-info {
-      width: 50%;
-      padding: 3rem;
-    }
-  }
-
   @media (max-width: 768px) {
+    .modal-info {
+      padding: 1.5rem;
+    }
+
     .modal-info h2 {
       font-size: 1.5rem;
     }
